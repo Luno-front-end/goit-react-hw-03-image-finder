@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import shortid from "shortid";
+import { toast } from "react-toastify";
 
 import "../styles/styles.css";
 
@@ -20,7 +21,8 @@ export default class Searchbar extends Component {
     e.preventDefault();
 
     if (this.state.nameImage.trim() === "") {
-      alert("Ім'я!!!");
+      toast.error("Введіть будь ласка ім'я картинок.");
+
       return;
     }
     this.props.onSubmit(this.state.nameImage.trim());
@@ -33,7 +35,7 @@ export default class Searchbar extends Component {
       <header className="Searchbar">
         <form className="SearchForm" onSubmit={this.onSubmitFetch}>
           <button type="submit" className="SearchForm-button">
-            <span className="SearchForm-button-label">Search</span>
+            <span className="SearchForm-button-label">Пошук</span>
           </button>
           <input
             id={keySearch}
@@ -41,7 +43,7 @@ export default class Searchbar extends Component {
             type="text"
             autoComplete="off"
             autoFocus
-            placeholder="Search images and photos"
+            placeholder="Пошук зображень та фото"
             name="name"
             value={this.state.nameImage}
             onChange={this.onValueInput}
