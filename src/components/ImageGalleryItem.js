@@ -9,7 +9,10 @@ export default function ImageGalleryItem({
   onClick,
 }) {
   return (
-    <li onClick={() => onClick(largeImageURL)} className="ImageGalleryItem">
+    <li
+      onClick={() => onClick(largeImageURL, tags)}
+      className="ImageGalleryItem"
+    >
       <img src={webformatURL} alt={tags} className="ImageGalleryItem-image" />
       {/* {console.log(id)} */}
     </li>
