@@ -1,6 +1,12 @@
-// import "../styles/styles.css";
+import React from "react";
 
-// window.scrollTo({
-//   top: document.documentElement.scrollHeight,
-//   behavior: "smooth",
-// });
+import "../styles/styles.css";
+
+function Button({ children, onClick }) {
+  return <button onClick={onClick}>{children}</button>;
+  // window.scrollTo({
+  //   top: document.documentElement.scrollHeight,
+  //   behavior: "smooth",
+  // });
+}
+export default Button;
