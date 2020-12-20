@@ -5,6 +5,7 @@ import React, { Component } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import Api from "./services/FetchAPI";
 import Searchbar from "./components/Searchbar";
 import ImageGalleryItem from "./components/ImageGallery";
 import Modal from "./components/Modal";
@@ -20,29 +21,38 @@ export default class Finder extends Component {
     selectedImage: null,
     page: 1,
     showModal: false,
+    error: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.nameImage !== this.state.nameImage) {
-      this.imagesFech();
+      this.setState({
+        page: 1,
+        nameImage: this.state.nameImage,
+        imagesArray: [],
+      });
+      this.searchImagesFetch();
     }
   }
+  searchImagesFetch = () => {
+    const { page, nameImage } = this.state;
 
-  imagesFech = () => {
-    const KEY = "key=19055497-436f2f9143aedeb9fa32eebb3";
-    const GENERAL_LINK = "https://pixabay.com/api/";
     this.setState({ loading: true });
 
-    fetch(
-      `${GENERAL_LINK}?${KEY}&q=${this.state.nameImage}&page=${this.state.page}&image_type=photo&orientation=horizontal&per_page=12`
-    )
-      .then((r) => r.json())
-      .then((imagesArrayFetch) => this.op(imagesArrayFetch.hits))
-      .then(this.incrementPage())
-      .finally(() => this.setState({ loading: false }));
+    Api.imagesFetch(nameImage, page)
+      .then((imagesArrayFetch) =>
+        this.checkNewFetchImagesArray(imagesArrayFetch.hits)
+      )
+      .catch((error) => this.setState({ error }))
+      .finally(() =>
+        this.setState((prevState) => ({
+          loading: false,
+          page: prevState.page + 1,
+        }))
+      );
   };
 
-  op = (imagesArrayFetch) => {
+  checkNewFetchImagesArray = (imagesArrayFetch) => {
     imagesArrayFetch === []
       ? this.setState({
           imagesArray: imagesArrayFetch,
@@ -56,17 +66,11 @@ export default class Finder extends Component {
     this.setState(({ showModal }) => ({ showModal: !showModal }));
   };
 
-  incrementPage = () => {
-    this.setState({ page: this.state.page + 1 });
-  };
-
-  hendleFormaSubmit = (nameImage) => {
+  isHendleFormaSubmit = (nameImage) => {
     this.setState({ nameImage });
   };
 
   isCurrentImage = (currentImage, tags) => {
-    console.log(currentImage);
-    console.log(tags);
     this.setState({
       selectedImage: [currentImage, tags],
       showModal: true,
@@ -82,7 +86,7 @@ export default class Finder extends Component {
   };
 
   onClickLoadMore = () => {
-    this.imagesFech();
+    this.searchImagesFetch();
     this.scrollGallery();
   };
   render() {
@@ -95,7 +99,7 @@ export default class Finder extends Component {
     } = this.state;
     return (
       <>
-        <Searchbar onSubmit={this.hendleFormaSubmit} />
+        <Searchbar onSubmit={this.isHendleFormaSubmit} />
 
         {imagesArray && (
           <ImageGalleryItem
